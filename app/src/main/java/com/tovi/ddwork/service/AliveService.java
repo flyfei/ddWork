@@ -28,8 +28,9 @@ public class AliveService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("AliveService onCreate=====");
+        // 保持屏幕常亮
         powerManager = (PowerManager) getSystemService(Service.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Lock");
+        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "ddWork Lock");
         wakeLock.acquire();
         DataChangeReceiver receiver = new DataChangeReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_TIME_TICK));

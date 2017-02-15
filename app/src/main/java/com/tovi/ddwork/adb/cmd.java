@@ -9,6 +9,11 @@ import java.util.Random;
  */
 
 public class cmd {
+    /**
+     * off Work
+     *
+     * @param isLeaveEarly 是否早退
+     */
     public static void offWork(boolean isLeaveEarly) {
         randomSleep(10);
         execShellCmd("adb shell");
@@ -25,6 +30,9 @@ public class cmd {
         execShellCmd("input keyevent KEYCODE_BACK");
     }
 
+    /**
+     * onWork
+     */
     public static void onWork() {
         randomSleep(10);
         execShellCmd("adb shell");

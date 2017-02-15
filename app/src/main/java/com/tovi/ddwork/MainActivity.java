@@ -2,13 +2,12 @@ package com.tovi.ddwork;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.accessibility.AccessibilityManager;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.tovi.ddwork.service.Service;
 
-public class MainActivity extends AppCompatActivity implements AccessibilityManager.AccessibilityStateChangeListener {
+public class MainActivity extends AppCompatActivity {
 
     private Switch state;
 
@@ -22,7 +21,9 @@ public class MainActivity extends AppCompatActivity implements AccessibilityMana
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    // 开启服务
                     Service.start(MainActivity.this, 1 * 60);
+                    // 设置屏幕常亮
                     Util.wakelock(MainActivity.this);
                 } else {
                     Service.stop(MainActivity.this);
@@ -35,12 +36,6 @@ public class MainActivity extends AppCompatActivity implements AccessibilityMana
     @Override
     protected void onResume() {
         super.onResume();
-        // 更新服务状态
-        updateServiceStatus();
-    }
-
-    @Override
-    public void onAccessibilityStateChanged(boolean enabled) {
         // 更新服务状态
         updateServiceStatus();
     }

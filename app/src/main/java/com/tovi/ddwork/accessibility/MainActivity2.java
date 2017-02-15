@@ -15,6 +15,7 @@ import com.tovi.ddwork.R;
 
 import java.util.List;
 
+// TODO 待开发
 public class MainActivity2 extends AppCompatActivity implements AccessibilityManager.AccessibilityStateChangeListener {
 
     Switch state;

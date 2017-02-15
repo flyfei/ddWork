@@ -11,12 +11,20 @@ import android.os.PowerManager;
 public class Util {
     private static PowerManager.WakeLock wakeLock = null;
 
+    /**
+     * 设置屏幕常亮
+     *
+     * @param context
+     */
     public static void wakelock(Context context) {
         dormancy();
         wakeLock = ((PowerManager) context.getSystemService(Service.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "ddWork Lock");
         wakeLock.acquire();
     }
 
+    /**
+     * 屏幕取消常亮
+     */
     public static void dormancy() {
         if (wakeLock != null) {
             wakeLock.release();

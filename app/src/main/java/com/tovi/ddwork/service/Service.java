@@ -47,7 +47,7 @@ public class Service {
     }
 
     /**
-     * 判断某个服务是否正在运行的方法
+     * 判断保活服务是否正在运行
      *
      * @param context
      * @return true代表正在运行，false代表服务没有正在运行
