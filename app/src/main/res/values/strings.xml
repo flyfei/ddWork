@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ddwork</string>
+    <string name="app_description">测试描述</string>
+    <string name="turn_on_error_toast">打开AccessibilitySetting失败</string>
+</resources>
