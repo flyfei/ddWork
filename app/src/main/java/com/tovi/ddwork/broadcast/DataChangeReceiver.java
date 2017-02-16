@@ -20,13 +20,18 @@ public class DataChangeReceiver extends BroadcastReceiver {
         mClalender.setTimeInMillis(System.currentTimeMillis());
         int hour = mClalender.get(Calendar.HOUR_OF_DAY);
         int minute = mClalender.get(Calendar.MINUTE);
-        System.out.println("时间发生变化: hour:" + hour + " minute:" + minute);
+        int week = mClalender.get(Calendar.DAY_OF_WEEK) - 1;
+        System.out.println("时间发生变化: week:" + week + " hour:" + hour + " minute:" + minute);
 
+        // 0 为 周日
+        if (week == 0 || week == 1) {
+            return;
+        }
 
         // offwork
-        if (hour == 19 && minute == 10) {
+        if (hour == 19 && minute == 1) {
             cmd.offWork(hour < 19);
-        } else if (hour == 8 && minute == 50) {
+        } else if (hour == 8 && minute == 36) {
             cmd.onWork();
         }
     }

@@ -18,7 +18,7 @@ public class cmd {
         randomSleep(10);
         execShellCmd("adb shell");
         // into
-        execShellCmd("input tap 137 1052");
+        execShellCmd("input tap 137 1320");
         sleep(10);
         // offWork
         execShellCmd("input tap 537 1397");
@@ -37,12 +37,11 @@ public class cmd {
         randomSleep(10);
         execShellCmd("adb shell");
         // into
-        execShellCmd("input tap 137 1052");
+        execShellCmd("input tap 137 1320");
         sleep(10);
         // onWork
-        execShellCmd("input tap 540 846");
+        execShellCmd("input tap 540 1015");
         sleep(5);
-//        execShellCmd("input tap 766 1514");
         execShellCmd("input keyevent KEYCODE_BACK");
     }
 
@@ -75,6 +74,7 @@ public class cmd {
      * @param second
      */
     private static void sleep(long second) {
+        System.out.println("second: " + second);
         if (second <= 0) return;
         try {
             Thread.sleep(second * 1000);
