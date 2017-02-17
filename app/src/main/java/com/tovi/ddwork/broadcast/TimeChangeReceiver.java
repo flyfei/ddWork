@@ -12,7 +12,7 @@ import java.util.Calendar;
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
 
-public class DataChangeReceiver extends BroadcastReceiver {
+public class TimeChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

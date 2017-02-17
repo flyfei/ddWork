@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
 
-import com.tovi.ddwork.broadcast.DataChangeReceiver;
+import com.tovi.ddwork.broadcast.TimeChangeReceiver;
 
 /**
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
@@ -32,7 +32,7 @@ public class AliveService extends Service {
         powerManager = (PowerManager) getSystemService(Service.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "ddWork Lock");
         wakeLock.acquire();
-        DataChangeReceiver receiver = new DataChangeReceiver();
+        TimeChangeReceiver receiver = new TimeChangeReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
