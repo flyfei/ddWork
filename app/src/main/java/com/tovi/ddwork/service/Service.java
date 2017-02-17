@@ -32,6 +32,8 @@ public class Service {
         //使用AlarmManger的setRepeating方法设置定期执行的时间间隔（seconds秒）和需要执行的Service
         manager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime,
                 seconds * 1000, pendingIntent);
+
+        context.startService(intent);
     }
 
     //停止服务
@@ -44,7 +46,8 @@ public class Service {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         //取消正在执行的服务
         manager.cancel(pendingIntent);
-        context.stopService(new Intent(AliveService.ACTION));
+
+        context.stopService(intent);
     }
 
     /**
