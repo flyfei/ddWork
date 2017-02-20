@@ -18,4 +18,25 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="97dp"
         android:text="状态：" />
+
+    <Button
+        android:id="@+id/btn_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/state"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/state"
+        android:text="Test" />
+
+    <TextView
+        android:text="About 5~15 S"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btn_test"
+        android:layout_toRightOf="@+id/btn_test"
+        android:layout_toEndOf="@+id/btn_test"
+        android:layout_marginLeft="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/textView" />
 </RelativeLayout>

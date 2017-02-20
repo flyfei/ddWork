@@ -56,13 +56,25 @@ public class cmd {
         execShellCmd("rm " + filePath);
     }
 
+    /**
+     * for test su
+     *
+     * @param filePath
+     * @return
+     */
+    public static boolean test(String filePath) {
+        boolean res = execShellCmd("screencap -p " + filePath);
+        sleep(2);
+        return res;
+    }
+
 
     /**
      * 执行shell命令
      *
      * @param cmd
      */
-    private static void execShellCmd(String cmd) {
+    private static boolean execShellCmd(String cmd) {
 
         try {
             // 申请获取root权限，这一步很重要，不然会没有作用
@@ -75,8 +87,10 @@ public class cmd {
             dataOutputStream.flush();
             dataOutputStream.close();
             outputStream.close();
+            return true;
         } catch (Throwable t) {
             t.printStackTrace();
+            return false;
         }
     }
 

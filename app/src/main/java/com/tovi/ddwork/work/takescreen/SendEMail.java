@@ -13,14 +13,14 @@ import javax.mail.MessagingException;
 
 public class SendEMail {
 
-    public static void send(String fileName, String date, OnSendListener onSendListener) {
+    public static void send(String fileName, String subject, OnSendListener onSendListener) {
         String[] recipients = {Config.TO};
         SendEmailAsyncTask email = new SendEmailAsyncTask();
         email.m = new Mail(Config.FROM, Config.PASS);
         email.m.set_from(Config.FROM);
         email.m.setBody("操作结果，见附件");
         email.m.set_to(recipients);
-        email.m.set_subject(date);
+        email.m.set_subject(subject);
         try {
             email.m.addAttachment(fileName);
         } catch (Exception e) {
