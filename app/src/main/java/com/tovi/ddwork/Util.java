@@ -31,4 +31,11 @@ public class Util {
             wakeLock = null;
         }
     }
+
+    /**
+     * 屏幕是否亮着
+     */
+    public static boolean isScreenOn(Context context) {
+        return ((PowerManager) context.getSystemService(Service.POWER_SERVICE)).isScreenOn();
+    }
 }

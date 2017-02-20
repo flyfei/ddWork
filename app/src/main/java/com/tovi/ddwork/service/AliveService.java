@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.tovi.ddwork.Util;
 import com.tovi.ddwork.broadcast.TimeChangeReceiver;
 
 /**
@@ -26,6 +27,7 @@ public class AliveService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("AliveService onCreate=====");
+        Util.wakelock(this);
         receiver = new TimeChangeReceiver();
         registerReceiver(receiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
@@ -33,6 +35,7 @@ public class AliveService extends Service {
     @Override
     public void onDestroy() {
         System.out.println("AliveService onDestroy=====");
+        Util.dormancy();
         unregisterReceiver(receiver);
         super.onDestroy();
     }

@@ -1,4 +1,4 @@
-package com.tovi.ddwork.adb;
+package com.tovi.ddwork.work.adb;
 
 import java.io.DataOutputStream;
 import java.io.OutputStream;
@@ -14,7 +14,7 @@ public class cmd {
      *
      * @param isLeaveEarly 是否早退
      */
-    public static void offWork(boolean isLeaveEarly) {
+    public static void offWork(boolean isLeaveEarly, OnOKListener onOKListener) {
         randomSleep(10);
         execShellCmd("adb shell");
         // into
@@ -27,13 +27,14 @@ public class cmd {
             execShellCmd("input tap 766 1514");
             sleep(5);
         }
+        if (onOKListener != null) onOKListener.onOk("offWork");
         execShellCmd("input keyevent KEYCODE_BACK");
     }
 
     /**
      * onWork
      */
-    public static void onWork() {
+    public static void onWork(OnOKListener onOKListener) {
         randomSleep(10);
         execShellCmd("adb shell");
         // into
@@ -42,8 +43,19 @@ public class cmd {
         // onWork
         execShellCmd("input tap 540 1015");
         sleep(5);
+        if (onOKListener != null) onOKListener.onOk("onWork");
         execShellCmd("input keyevent KEYCODE_BACK");
     }
+
+    public static void takeScreen(String filePath) {
+        execShellCmd("screencap -p " + filePath);
+        sleep(2);
+    }
+
+    public static void delFile(String filePath) {
+        execShellCmd("rm " + filePath);
+    }
+
 
     /**
      * 执行shell命令
@@ -90,5 +102,9 @@ public class cmd {
      */
     private static void randomSleep(int second) {
         sleep(new Random().nextInt(second));
+    }
+
+    public interface OnOKListener {
+        void onOk(String type);
     }
 }

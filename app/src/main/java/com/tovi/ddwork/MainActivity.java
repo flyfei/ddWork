@@ -23,11 +23,8 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     // 开启服务
                     Service.start(MainActivity.this, 1 * 60);
-                    // 设置屏幕常亮
-                    Util.wakelock(MainActivity.this);
                 } else {
                     Service.stop(MainActivity.this);
-                    Util.dormancy();
                 }
             }
         });
