@@ -24,7 +24,7 @@ public class TimeChangeReceiver extends BroadcastReceiver {
         System.out.println("时间发生变化: week:" + week + " hour:" + hour + " minute:" + minute);
 
         // 0 为 周日
-        if (week == 0 || week == 1) {
+        if (week == 0 || week == 6) {
             return;
         }
 
