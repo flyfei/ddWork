@@ -12,7 +12,7 @@ import java.util.Date;
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
 
-public class Work {
+class Work {
     public static void onWork() {
         new Thread(new Runnable() {
             @Override
@@ -34,7 +34,7 @@ public class Work {
         }).start();
     }
 
-    private static cmd.OnOKListener onOKListener = new cmd.OnOKListener() {
+    private static final cmd.OnOKListener onOKListener = new cmd.OnOKListener() {
         @Override
         public void onOk(String type) {
             // 是否需要发送邮件

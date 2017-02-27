@@ -22,7 +22,7 @@ import javax.mail.internet.MimeMultipart;
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
 
-public class Mail extends javax.mail.Authenticator {
+class Mail extends javax.mail.Authenticator {
     private String _user;
     private String _pass;
 
@@ -43,7 +43,7 @@ public class Mail extends javax.mail.Authenticator {
 
     private Multipart _multipart;
 
-    public Mail() {
+    private Mail() {
         _host = "smtp.gmail.com"; // default smtp server
         _port = "465"; // default smtp port
         _sport = "465"; // default socketfactory port
