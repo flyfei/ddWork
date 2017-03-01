@@ -1,6 +1,7 @@
 package com.tovi.ddwork.work.takescreen;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import com.tovi.ddwork.Config;
 
@@ -18,13 +19,18 @@ public class SendEMail {
         SendEmailAsyncTask email = new SendEmailAsyncTask();
         email.m = new Mail(Config.FROM, Config.PASS);
         email.m.set_from(Config.FROM);
-        email.m.setBody("操作结果，见附件");
         email.m.set_to(recipients);
         email.m.set_subject(subject);
-        try {
-            email.m.addAttachment(fileName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        
+        if (TextUtils.isEmpty(fileName)) {
+            email.m.setBody("通知类消息");
+        } else {
+            email.m.setBody("操作结果，见附件");
+            try {
+                email.m.addAttachment(fileName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         email.m.set_host("smtp.sina.com.cn");
@@ -48,10 +54,10 @@ class SendEmailAsyncTask extends AsyncTask<Void, Void, Boolean> {
     protected Boolean doInBackground(Void... params) {
         try {
             if (m.send()) {
-                System.out.println("Email sent.");
+                System.out.println("Email sent." + m.get_subject());
                 if (onSendListener != null) onSendListener.onSendOk();
             } else {
-                System.out.println("Email failed to send.");
+                System.out.println("Email failed to send." + m.get_subject());
                 if (onSendListener != null) onSendListener.onSendError();
             }
 

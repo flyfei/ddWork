@@ -14,11 +14,13 @@ public class cmd {
      *
      * @param isLeaveEarly 是否早退
      */
-    public static void offWork(boolean isLeaveEarly, OnOKListener onOKListener) {
+    public static void offWork(boolean isLeaveEarly, int[] location, OnOKListener onOKListener) {
+        if (location == null || location.length < 2) return;
+
         randomSleep(10);
         execShellCmd("adb shell");
         // into
-        execShellCmd("input tap 137 1320");
+        execShellCmd(String.format("input tap %s %s", location[0], location[1]));
         sleep(10);
         // offWork
         execShellCmd("input tap 537 1397");
@@ -29,22 +31,28 @@ public class cmd {
         }
         if (onOKListener != null) onOKListener.onOk("offWork");
         execShellCmd("input keyevent KEYCODE_BACK");
+        sleep(5);
+        if (onOKListener != null) onOKListener.onGotoHome();
     }
 
     /**
      * onWork
      */
-    public static void onWork(OnOKListener onOKListener) {
+    public static void onWork(int[] location, OnOKListener onOKListener) {
+        if (location == null || location.length < 2) return;
+
         randomSleep(10);
         execShellCmd("adb shell");
         // into
-        execShellCmd("input tap 137 1320");
+        execShellCmd(String.format("input tap %s %s", location[0], location[1]));
         sleep(10);
         // onWork
         execShellCmd("input tap 540 1015");
         sleep(5);
         if (onOKListener != null) onOKListener.onOk("onWork");
         execShellCmd("input keyevent KEYCODE_BACK");
+        sleep(5);
+        if (onOKListener != null) onOKListener.onGotoHome();
     }
 
     public static void takeScreen(String filePath) {
@@ -120,5 +128,7 @@ public class cmd {
 
     public interface OnOKListener {
         void onOk(String type);
+
+        void onGotoHome();
     }
 }

@@ -1,6 +1,7 @@
 package com.tovi.ddwork.work;
 
 import com.tovi.ddwork.Config;
+import com.tovi.ddwork.Util;
 import com.tovi.ddwork.work.adb.cmd;
 import com.tovi.ddwork.work.takescreen.SendEMail;
 
@@ -17,7 +18,7 @@ class Work {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                cmd.onWork(onOKListener);
+                cmd.onWork(Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
             }
         }).start();
     }
@@ -29,7 +30,7 @@ class Work {
                 Calendar mCalendar = Calendar.getInstance();
                 mCalendar.setTimeInMillis(System.currentTimeMillis());
                 int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
-                cmd.offWork(hour < Config.OFF_WORK_HOUR, onOKListener);
+                cmd.offWork(hour < Config.OFF_WORK_HOUR, Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
             }
         }).start();
     }
@@ -37,26 +38,35 @@ class Work {
     private static final cmd.OnOKListener onOKListener = new cmd.OnOKListener() {
         @Override
         public void onOk(String type) {
-            // 是否需要发送邮件
-            if (!Config.AUTO_SEND_EMAIL) {
-                return;
-            }
+            sendEmail(type);
+        }
 
-            String date = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date(System.currentTimeMillis()));
-            String fileName = String.format(".%s%s", date, type);
-            final String filePath = String.format("/sdcard/Android/data/%s.png", fileName);
-            cmd.takeScreen(filePath);
-            SendEMail.send(filePath, String.format("%s%s", date, type), new SendEMail.OnSendListener() {
-                @Override
-                public void onSendOk() {
-                    cmd.delFile(filePath);
-                }
-
-                @Override
-                public void onSendError() {
-                    cmd.delFile(filePath);
-                }
-            });
+        @Override
+        public void onGotoHome() {
+            sendEmail("GotoHome");
         }
     };
+
+    private static void sendEmail(String type) {
+        // 是否需要发送邮件
+        if (!Config.AUTO_SEND_EMAIL) {
+            return;
+        }
+
+        String date = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date(System.currentTimeMillis()));
+        String fileName = String.format(".%s%s", date, type);
+        final String filePath = String.format("/sdcard/Android/data/%s.png", fileName);
+        cmd.takeScreen(filePath);
+        SendEMail.send(filePath, String.format("%s-%s", date, type), new SendEMail.OnSendListener() {
+            @Override
+            public void onSendOk() {
+                cmd.delFile(filePath);
+            }
+
+            @Override
+            public void onSendError() {
+                cmd.delFile(filePath);
+            }
+        });
+    }
 }
