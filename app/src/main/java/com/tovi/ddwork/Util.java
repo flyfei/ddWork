@@ -18,7 +18,8 @@ public class Util {
      * @param context
      */
     public static void wakelock(Context context) {
-        dormancy();
+        if (isHeld()) return;
+
         wakeLock = ((PowerManager) context.getSystemService(Service.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "ddWork Lock");
         wakeLock.acquire();
     }
@@ -27,17 +28,14 @@ public class Util {
      * 屏幕取消常亮
      */
     public static void dormancy() {
-        if (wakeLock != null) {
+        if (isHeld()) {
             wakeLock.release();
             wakeLock = null;
         }
     }
 
-    /**
-     * 屏幕是否亮着
-     */
-    public static boolean isScreenOn(Context context) {
-        return ((PowerManager) context.getSystemService(Service.POWER_SERVICE)).isScreenOn();
+    private static boolean isHeld() {
+        return wakeLock != null && wakeLock.isHeld();
     }
 
     private static volatile SharedPreferences sp;
