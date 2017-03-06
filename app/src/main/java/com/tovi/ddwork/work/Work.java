@@ -1,5 +1,9 @@
 package com.tovi.ddwork.work;
 
+import android.app.KeyguardManager;
+import android.content.Context;
+import android.os.PowerManager;
+
 import com.tovi.ddwork.Config;
 import com.tovi.ddwork.Util;
 import com.tovi.ddwork.work.adb.cmd;
@@ -33,6 +37,38 @@ class Work {
                 cmd.offWork(hour < Config.OFF_WORK_HOUR, Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
             }
         }).start();
+    }
+
+    public static void wakeUp(Context context) {
+        // 唤醒屏幕(如果屏幕没有被唤醒)
+        PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        if (!pm.isScreenOn()) {
+            System.out.println("唤醒屏幕");
+            // 唤醒屏幕
+            cmd.power();
+        }
+    }
+
+    /**
+     * unLock
+     *
+     * @param context
+     */
+    public static void unLock(Context context) {
+        // 解锁(如果有锁)
+        KeyguardManager mKeyguardManager = (KeyguardManager) context.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+        if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
+            System.out.println("解锁");
+            // unlock
+            cmd.unLock();
+        }
+    }
+
+    /**
+     * lock
+     */
+    public static void lock() {
+        cmd.power();
     }
 
     private static final cmd.OnOKListener onOKListener = new cmd.OnOKListener() {

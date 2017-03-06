@@ -24,11 +24,11 @@ public class TimeChangeReceiver extends BroadcastReceiver {
         int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = mCalendar.get(Calendar.MINUTE);
         int week = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
-        System.out.println("时间发生变化: week:" + week + " hour:" + hour + " minute:" + minute);
+        System.out.println("TimeChange: week:" + week + " hour:" + hour + " minute:" + minute);
 
         Synchronization.start(context, week, hour, minute);
         if (Config.AUTO_WORK) {
-            AutoWork.Work(week, hour, minute);
+            AutoWork.Work(context, week, hour, minute);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.tovi.ddwork.work;
 
+import android.content.Context;
+
 import com.tovi.ddwork.Config;
 
 /**
@@ -7,7 +9,7 @@ import com.tovi.ddwork.Config;
  */
 
 public class AutoWork {
-    public static void Work(int week, int hour, int minute) {
+    public static void Work(Context context, int week, int hour, int minute) {
         // 0 为 周日
         if (week == 0 || week == 6) {
             return;
@@ -15,11 +17,17 @@ public class AutoWork {
 
         // onWork
         if (hour == Config.AUTO_ON_WORK_HOUR && minute == Config.AUTO_ON_WORK_MINUTE) {
+            Work.wakeUp(context);
+            Work.unLock(context);
             Work.onWork();
+            Work.lock();
         }
         // offwork
         if (hour == Config.AUTO_OFF_WORK_HOUR && minute == Config.AUTO_OFF_WORK_MINUTE) {
+            Work.wakeUp(context);
+            Work.unLock(context);
             Work.offWork();
+            Work.lock();
         }
     }
 }

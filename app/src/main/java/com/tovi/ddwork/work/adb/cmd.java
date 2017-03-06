@@ -10,6 +10,52 @@ import java.util.Random;
 
 public class cmd {
     /**
+     * wakeUp
+     */
+    public static void power() {
+        execShellCmd("input keyevent KEYCODE_POWER");
+        sleep(2);
+    }
+    /**
+     * unLock
+     */
+    public static void unLock() {
+        String[] cmds = new String[]{
+                "sendevent /dev/input/event5 3 58 47",
+                "sendevent /dev/input/event5 3 53 534",
+                "sendevent /dev/input/event5 3 54 1121",
+                "sendevent /dev/input/event5 3 57 0",
+                "sendevent /dev/input/event5 0 2 0",
+                "sendevent /dev/input/event5 1 330 1",
+                "sendevent /dev/input/event5 0 0 0",
+                "sleep 0.12",
+                "sendevent /dev/input/event5 3 58 49",
+                "sendevent /dev/input/event5 3 53 534",
+                "sendevent /dev/input/event5 3 54 1742",
+                "sendevent /dev/input/event5 3 57 0",
+                "sendevent /dev/input/event5 0 2 0",
+                "sendevent /dev/input/event5 0 0 0",
+                "sendevent /dev/input/event5 3 58 49",
+                "sendevent /dev/input/event5 3 53 838",
+                "sendevent /dev/input/event5 3 54 1742",
+                "sendevent /dev/input/event5 3 57 0",
+                "sendevent /dev/input/event5 0 2 0",
+                "sendevent /dev/input/event5 0 0 0",
+                "sleep 0.38",
+                "sendevent /dev/input/event5 0 2 0",
+                "sendevent /dev/input/event5 1 330 0",
+                "sendevent /dev/input/event5 0 0 0"
+        };
+
+        // slide screen（For Showing Lock）
+        execShellCmd("input swipe 226 970 890 1090");
+        sleep(2);
+        for (String cmd : cmds) {
+            execShellCmd(cmd);
+        }
+        sleep(2);
+    }
+    /**
      * off Work
      *
      * @param isLeaveEarly 是否早退
