@@ -8,6 +8,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.tovi.ddwork.service.Service;
+import com.tovi.ddwork.work.Synchronization;
 import com.tovi.ddwork.work.test.Test;
 
 public class MainActivity extends AppCompatActivity {
@@ -47,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 });
+            }
+        });
+        findViewById(R.id.btn_sync).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Synchronization.sync(MainActivity.this);
             }
         });
 

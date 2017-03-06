@@ -24,7 +24,7 @@ import okhttp3.Response;
 public class Synchronization {
     private static final OkHttpClient client = new OkHttpClient();
 
-    public static void start(final Context context, int week, int hour, int minute) {
+    public static void start(Context context, int week, int hour, int minute) {
         // 0 为 周日
         if (week == 0 || week == 6) {
             return;
@@ -48,6 +48,11 @@ public class Synchronization {
         if (minute % 10 != 0) {
             return;
         }
+        sync(context);
+
+    }
+
+    public static void sync(final Context context) {
         Request request = new Request.Builder()
                 .url("https://raw.githubusercontent.com/flyfei/ddWork/test/data")
                 .build();

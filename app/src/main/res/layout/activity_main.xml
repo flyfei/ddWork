@@ -39,4 +39,14 @@
         android:layout_marginStart="32dp"
         android:layout_marginBottom="12dp"
         android:id="@+id/textView" />
+
+    <Button
+        android:text="Sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/state"
+        android:layout_alignLeft="@+id/state"
+        android:layout_alignStart="@+id/state"
+        android:layout_marginTop="61dp"
+        android:id="@+id/btn_sync" />
 </RelativeLayout>
