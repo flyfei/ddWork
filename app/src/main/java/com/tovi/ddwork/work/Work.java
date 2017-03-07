@@ -3,6 +3,7 @@ package com.tovi.ddwork.work;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.PowerManager;
+import android.util.Log;
 
 import com.tovi.ddwork.Config;
 import com.tovi.ddwork.Util;
@@ -18,19 +19,19 @@ import java.util.Date;
  */
 
 class Work {
-    public static void onWork() {
-        new Thread(new Runnable() {
+    public static void onWork(Context context) {
+        new WorkThread(context, new WorkThread.OnWorkListener() {
             @Override
-            public void run() {
+            public void toWork() {
                 cmd.onWork(Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
             }
         }).start();
     }
 
-    public static void offWork() {
-        new Thread(new Runnable() {
+    public static void offWork(Context context) {
+        new WorkThread(context, new WorkThread.OnWorkListener() {
             @Override
-            public void run() {
+            public void toWork() {
                 Calendar mCalendar = Calendar.getInstance();
                 mCalendar.setTimeInMillis(System.currentTimeMillis());
                 int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
@@ -39,7 +40,7 @@ class Work {
         }).start();
     }
 
-    public static void wakeUp(Context context) {
+    private static void wakeUp(Context context) {
         // 唤醒屏幕(如果屏幕没有被唤醒)
         PowerManager pm = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
         if (!pm.isScreenOn()) {
@@ -54,7 +55,7 @@ class Work {
      *
      * @param context
      */
-    public static void unLock(Context context) {
+    private static void unLock(Context context) {
         // 解锁(如果有锁)
         KeyguardManager mKeyguardManager = (KeyguardManager) context.getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         if (mKeyguardManager.inKeyguardRestrictedInputMode()) {
@@ -67,7 +68,7 @@ class Work {
     /**
      * lock
      */
-    public static void lock() {
+    private static void lock() {
         cmd.power();
     }
 
@@ -104,5 +105,37 @@ class Work {
                 cmd.delFile(filePath);
             }
         });
+    }
+
+    static class WorkThread extends Thread {
+        private static final String TAG = "WorkThread";
+        private Context applicationContext;
+        private OnWorkListener onWorkListener;
+
+        public WorkThread(Context context, OnWorkListener onWorkListener) {
+            if (context != null) {
+                applicationContext = context.getApplicationContext();
+            }
+            this.onWorkListener = onWorkListener;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            if (applicationContext != null) {
+                Work.wakeUp(applicationContext);
+                Work.unLock(applicationContext);
+                Util.wakelock(applicationContext);
+            } else {
+                Log.e(TAG, "run: applicationContext is null");
+            }
+            if (onWorkListener != null) onWorkListener.toWork();
+            Util.dormancy();
+            Work.lock();
+        }
+
+        public interface OnWorkListener {
+            void toWork();
+        }
     }
 }
