@@ -44,11 +44,12 @@ public class Synchronization {
             return;
         }
 
-        // 10 分钟同步一次
-        if (minute % 10 != 0) {
-            return;
+
+        long chaMinute = 2 * 60 * 1000;
+        // 10 分钟同步一次 开始work前2分钟同步一次
+        if (minute % 10 == 0 || curDate + chaMinute == onWorkDate || curDate + chaMinute == offWorkDate) {
+            sync(context);
         }
-        sync(context);
 
     }
 
