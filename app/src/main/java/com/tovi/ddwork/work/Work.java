@@ -20,6 +20,7 @@ import java.util.Date;
 
 class Work {
     public static void onWork(Context context) {
+        System.out.println("onWorking===");
         new WorkThread(context, new WorkThread.OnWorkListener() {
             @Override
             public void toWork() {
@@ -29,6 +30,7 @@ class Work {
     }
 
     public static void offWork(Context context) {
+        System.out.println("offWorking===");
         new WorkThread(context, new WorkThread.OnWorkListener() {
             @Override
             public void toWork() {

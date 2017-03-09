@@ -25,6 +25,7 @@
                 <action android:name="com.tovi.ddwork.AService" />
             </intent-filter>
         </service>
+        <receiver android:name=".broadcast.TimeChangeReceiver" />
     </application>
 
 </manifest>

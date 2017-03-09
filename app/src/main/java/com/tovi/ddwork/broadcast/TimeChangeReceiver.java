@@ -26,7 +26,7 @@ public class TimeChangeReceiver extends BroadcastReceiver {
         int week = mCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         System.out.println("TimeChange: week:" + week + " hour:" + hour + " minute:" + minute);
 
-        Synchronization.start(context, week, hour, minute);
+        Synchronization.sync(context);
         if (Config.AUTO_WORK) {
             AutoWork.Work(context, week, hour, minute);
         }
