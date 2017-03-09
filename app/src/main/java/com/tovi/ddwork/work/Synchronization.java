@@ -25,33 +25,48 @@ public class Synchronization {
     private static final OkHttpClient client = new OkHttpClient();
 
     public static void start(Context context, int week, int hour, int minute) {
-        // 0 为 周日
-        if (week == 0 || week == 6) {
-            return;
-        }
-        long curDate = new Date(0, 0, 0, hour, minute, 0).getTime();
-        long onWorkDate = new Date(0, 0, 0, Config.AUTO_ON_WORK_HOUR, Config.AUTO_ON_WORK_MINUTE, 0).getTime();
-        long offWorkDate = new Date(0, 0, 0, Config.AUTO_OFF_WORK_HOUR, Config.AUTO_OFF_WORK_MINUTE, 0).getTime();
-        long chaDate = 1 * 60 * 60 * 1000;
-        boolean isWork = false;
-        if (onWorkDate - chaDate <= curDate && curDate <= onWorkDate) {
-            isWork = true;
-        }
-        if (offWorkDate - chaDate <= curDate && curDate <= offWorkDate) {
-            isWork = true;
-        }
-        if (!isWork) {
-            return;
-        }
+        if (!checkWeek(week)) return;
+
+        long curTime = new Date(0, 0, 0, hour, minute, 0).getTime();
+        long onWorkTime = new Date(0, 0, 0, Config.AUTO_ON_WORK_HOUR, Config.AUTO_ON_WORK_MINUTE, 0).getTime();
+        long offWorkTime = new Date(0, 0, 0, Config.AUTO_OFF_WORK_HOUR, Config.AUTO_OFF_WORK_MINUTE, 0).getTime();
+        long frameSize = 1 * 60 * 60 * 1000; // work前一小时内执行
 
 
-        long chaMinute = 2 * 60 * 1000;
-        // 10 分钟同步一次 开始work前2分钟同步一次
-        if (minute % 10 == 0 || curDate + chaMinute == onWorkDate || curDate + chaMinute == offWorkDate) {
+        int minuteSize = 10; // 10分钟执行一次 (在时间段范围内)
+        long beforeSize = 2 * 60 * 1000; // work前2分钟执行一次
+        if ((checkTimeFrame(curTime, onWorkTime, onWorkTime, frameSize) && checkMinute(minute, minuteSize)) || isBefore(curTime, onWorkTime, offWorkTime, beforeSize)) {
             sync(context);
         }
-
     }
+
+    public static boolean checkWeek(int week) {
+        // 0 为 周日
+        if (week == 0 || week == 6) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkTimeFrame(long curTime, long onWorkTime, long offWorkTime, long frameSize) {
+        if (onWorkTime - frameSize <= curTime && curTime <= onWorkTime) {
+            return true;
+        }
+        if (offWorkTime - frameSize <= curTime && curTime <= offWorkTime) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean checkMinute(int curMinute, int minuteSize) {
+        if (minuteSize <= 0) return false;
+        return curMinute % minuteSize == 0;
+    }
+
+    public static boolean isBefore(long curTime, long onWorkTime, long offWorkTime, long beforeSize) {
+        return curTime + beforeSize == onWorkTime || curTime + beforeSize == offWorkTime;
+    }
+
 
     public static void sync(final Context context) {
         Request request = new Request.Builder()
