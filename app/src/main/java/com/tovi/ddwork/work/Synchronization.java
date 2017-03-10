@@ -87,7 +87,7 @@ public class Synchronization {
                 System.out.println(json);
 
 
-                int location = 0;
+                int location = -1;
                 boolean forceOnWork = false;
                 boolean forceOffWork = false;
                 try {
@@ -99,6 +99,8 @@ public class Synchronization {
                     e.printStackTrace();
                 }
                 System.out.println(location + " " + forceOnWork + " " + forceOffWork);
+
+                if (location == -1) return;
 
                 if (Util.getHomeLocation() != location) {
                     System.out.println("update location");
