@@ -2,6 +2,7 @@ package com.tovi.ddwork;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -39,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
                 Test.start(new Test.OnTestListener() {
                     @Override
                     public void onTestRes(final String res) {
-                        System.out.println(res);
+
+                        final boolean isOk = TextUtils.isEmpty(res);
+                        Util.setTested(MainActivity.this, isOk);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(MainActivity.this, res, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, isOk ? "测试成功" : res, Toast.LENGTH_SHORT).show();
+                                state.setEnabled(isOk);
                             }
                         });
                     }
@@ -64,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         // 更新服务状态
         updateServiceStatus();
+        // 更新测试状态
+        state.setEnabled(Util.getTested());
     }
 
     /**

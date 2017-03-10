@@ -32,7 +32,7 @@ public class Test {
             public void onSendOk() {
                 cmd.delFile(filePath);
                 if (onTestListener != null) {
-                    onTestListener.onTestRes("测试成功");
+                    onTestListener.onTestRes(null);
                 }
             }
 

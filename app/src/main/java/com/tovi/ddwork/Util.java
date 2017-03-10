@@ -62,4 +62,17 @@ public class Util {
         return 0;
     }
 
+    public static void setTested(Context context, boolean test) {
+        initSharedPreferences(context);
+        editor.putBoolean("test", test);
+        editor.commit();
+    }
+
+    public static boolean getTested() {
+        if (sp != null) {
+            return sp.getBoolean("test", false);
+        }
+        return false;
+    }
+
 }
