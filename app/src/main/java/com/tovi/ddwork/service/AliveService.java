@@ -13,7 +13,6 @@ import com.tovi.ddwork.work.AutoWork;
 
 public class AliveService extends Service {
     public static final String ACTION = "com.tovi.ddwork.AService";
-//    private TimeChangeReceiver receiver;
 
     @Nullable
     @Override
@@ -25,15 +24,12 @@ public class AliveService extends Service {
     public void onCreate() {
         super.onCreate();
         System.out.println("AliveService onCreate=====");
-//        receiver = new TimeChangeReceiver();
-//        registerReceiver(receiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         AutoWork.init(this);
     }
 
     @Override
     public void onDestroy() {
         System.out.println("AliveService onDestroy=====");
-//        unregisterReceiver(receiver);
         AutoWork.destroy();
         super.onDestroy();
     }

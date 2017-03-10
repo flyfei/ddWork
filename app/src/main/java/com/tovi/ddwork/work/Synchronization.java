@@ -1,15 +1,18 @@
 package com.tovi.ddwork.work;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 
-import com.tovi.ddwork.Config;
 import com.tovi.ddwork.Util;
+import com.tovi.ddwork.receiver.AlarmReceiver;
 import com.tovi.ddwork.work.takescreen.SendEMail;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Date;
+import java.util.Calendar;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -22,51 +25,56 @@ import okhttp3.Response;
  */
 
 public class Synchronization {
+    private static final int ACTION = 101;
+    private static PendingIntent alarmIntent;
+
     private static final OkHttpClient client = new OkHttpClient();
 
-    public static void start(Context context, int week, int hour, int minute) {
-        if (!checkWeek(week)) return;
+    public static void init(Context context, Calendar calendar, Calendar curCalendar) {
 
-        long curTime = new Date(0, 0, 0, hour, minute, 0).getTime();
-        long onWorkTime = new Date(0, 0, 0, Config.AUTO_ON_WORK_HOUR, Config.AUTO_ON_WORK_MINUTE, 0).getTime();
-        long offWorkTime = new Date(0, 0, 0, Config.AUTO_OFF_WORK_HOUR, Config.AUTO_OFF_WORK_MINUTE, 0).getTime();
-        long frameSize = 1 * 60 * 60 * 1000; // work前一小时内执行
+        if (context == null || calendar == null || curCalendar == null) return;
+        calendar.add(Calendar.MINUTE, -5);
 
+        destroy();
 
-        int minuteSize = 10; // 10分钟执行一次 (在时间段范围内)
-        long beforeSize = 2 * 60 * 1000; // work前2分钟执行一次
-        if ((checkTimeFrame(curTime, onWorkTime, onWorkTime, frameSize) && checkMinute(minute, minuteSize)) || isBefore(curTime, onWorkTime, offWorkTime, beforeSize)) {
-            sync(context);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra(AlarmReceiver.TYPE, AlarmReceiver.SYNC);
+        alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (calendar.getTimeInMillis() <= curCalendar.getTimeInMillis()) {
+            Alarm.bindIntent(context, System.currentTimeMillis(), alarmIntent);
+            System.out.println("at once start ========");
+        } else {
+            Alarm.bindIntent(context, calendar.getTimeInMillis(), alarmIntent);
         }
     }
 
-    public static boolean checkWeek(int week) {
-        // 0 为 周日
-        if (week == 0 || week == 6) {
-            return false;
+    private static Handler handler = new Handler();
+    private static Runnable runnable;
+
+    public static void start(final Context context) {
+        stop();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                sync(context);
+                handler.postDelayed(this, 60 * 1000);
+            }
+        };
+        handler.postDelayed(runnable, 100);
+    }
+
+    public static void stop() {
+        if (runnable != null) {
+            handler.removeCallbacks(runnable);
+            runnable = null;
         }
-        return true;
     }
 
-    public static boolean checkTimeFrame(long curTime, long onWorkTime, long offWorkTime, long frameSize) {
-        if (onWorkTime - frameSize <= curTime && curTime <= onWorkTime) {
-            return true;
-        }
-        if (offWorkTime - frameSize <= curTime && curTime <= offWorkTime) {
-            return true;
-        }
-        return false;
+    public static void destroy() {
+        Alarm.cancel(alarmIntent);
+        stop();
     }
-
-    public static boolean checkMinute(int curMinute, int minuteSize) {
-        if (minuteSize <= 0) return false;
-        return curMinute % minuteSize == 0;
-    }
-
-    public static boolean isBefore(long curTime, long onWorkTime, long offWorkTime, long beforeSize) {
-        return curTime + beforeSize == onWorkTime || curTime + beforeSize == offWorkTime;
-    }
-
 
     public static void sync(final Context context) {
         Request request = new Request.Builder()

@@ -1,12 +1,11 @@
 package com.tovi.ddwork.work;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
 import com.tovi.ddwork.Config;
-import com.tovi.ddwork.broadcast.TimeChangeReceiver;
+import com.tovi.ddwork.receiver.AlarmReceiver;
 
 import java.util.Calendar;
 
@@ -15,7 +14,19 @@ import java.util.Calendar;
  */
 
 public class AutoWork {
-    public static void Work(Context context, int week, int hour, int minute) {
+    private static final int ACTION = 100;
+    private static final String WORK_WEEK = "WORK_WEEK";
+    private static final String WORK_HOUR = "WORK_HOUR";
+    private static final String WORK_MINUTE = "WORK_MINUTE";
+
+    public static void work(Context context, Intent intent) {
+        int hour = intent.getIntExtra(WORK_HOUR, -1);
+        int week = intent.getIntExtra(WORK_WEEK, -1);
+        int minute = intent.getIntExtra(WORK_MINUTE, -1);
+        work(context, week, hour, minute);
+    }
+
+    private static void work(Context context, int week, int hour, int minute) {
         // 0 为 周日
         if (week == 0 || week == 6) {
             return;
@@ -37,12 +48,11 @@ public class AutoWork {
 
         destroy();
 
-        alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, TimeChangeReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar curCalendar = Calendar.getInstance();
         curCalendar.setTimeInMillis(System.currentTimeMillis());
+        curCalendar.set(Calendar.SECOND, 0);
+        curCalendar.set(Calendar.MILLISECOND, 0);
         int week = curCalendar.get(Calendar.DAY_OF_WEEK) - 1;
         int hour = curCalendar.get(Calendar.HOUR_OF_DAY);
 
@@ -57,11 +67,11 @@ public class AutoWork {
         offWorkCalendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_OFF_WORK_HOUR);
         offWorkCalendar.set(Calendar.MINUTE, Config.AUTO_OFF_WORK_MINUTE);
 
-        if (curCalendar.before(onWorkCalendar)) {
+        if (!isWeekend(week) && curCalendar.before(onWorkCalendar)) {
             calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
             calendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
             System.out.println("init cur on ========");
-        } else if (curCalendar.before(offWorkCalendar)) {
+        } else if (!isWeekend(week) && curCalendar.before(offWorkCalendar)) {
             calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_OFF_WORK_HOUR);
             calendar.set(Calendar.MINUTE, Config.AUTO_OFF_WORK_MINUTE);
             System.out.println("init cur off ========");
@@ -77,26 +87,30 @@ public class AutoWork {
             calendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
             System.out.println("init next on ========");
         }
-        calendar.add(Calendar.MINUTE, -10);
 
+        // sync
+        Synchronization.init(context, (Calendar) calendar.clone(), (Calendar) curCalendar.clone());
 
-        if (calendar.getTimeInMillis() <= curCalendar.getTimeInMillis()) {
-            alarmMgr.setRepeating(AlarmManager.RTC, System.currentTimeMillis(),
-                    1000 * 60 * 1, alarmIntent);
-            System.out.println("at once start ========");
-            return;
-        }
-        alarmMgr.setRepeating(AlarmManager.RTC, calendar.getTimeInMillis(),
-                1000 * 60 * 1, alarmIntent);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra(AlarmReceiver.TYPE, AlarmReceiver.WORK);
+        intent.putExtra(WORK_WEEK, calendar.get(Calendar.DAY_OF_WEEK) - 1);
+        intent.putExtra(WORK_HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+        intent.putExtra(WORK_MINUTE, calendar.get(Calendar.MINUTE));
+
+        alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+        Alarm.bindIntent(context, calendar, alarmIntent);
     }
 
-    private static AlarmManager alarmMgr;
+    private static boolean isWeekend(int week) {
+        return week == 0 || week == 6;
+    }
+
     private static PendingIntent alarmIntent;
 
     public static void destroy() {
-        if (alarmMgr != null && alarmIntent != null) {
-            alarmMgr.cancel(alarmIntent);
-        }
-        alarmMgr = null;
+        Alarm.cancel(alarmIntent);
+        Synchronization.destroy();
     }
 }
