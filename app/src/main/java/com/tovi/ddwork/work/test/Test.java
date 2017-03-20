@@ -3,6 +3,8 @@ package com.tovi.ddwork.work.test;
 import com.tovi.ddwork.work.adb.cmd;
 import com.tovi.ddwork.work.takescreen.SendEMail;
 
+import java.io.File;
+
 /**
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
@@ -14,12 +16,15 @@ public class Test {
             public void run() {
                 long currentTime = System.currentTimeMillis();
                 String filePath = "/sdcard/Android/" + currentTime + ".png";
-                // test su
-                boolean suRes = cmd.test(filePath);
-                if (!suRes) {
-                    if (onTestListener != null) onTestListener.onTestRes("超级权限获取失败");
+                // test adb
+                cmd.test(filePath);
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    System.out.println("System Test Error");
+                    if (onTestListener != null) onTestListener.onTestRes("你的系统太牛逼了，头疼，你先root吧");
                     return;
                 }
+                System.out.println("System Test Success");
                 // test email
                 testEmail(filePath, "程序测试" + currentTime, onTestListener);
             }
@@ -40,7 +45,7 @@ public class Test {
             public void onSendError() {
                 cmd.delFile(filePath);
                 if (onTestListener != null) {
-                    onTestListener.onTestRes("邮件发送失败，请检查网络及设置");
+                    onTestListener.onTestRes("邮件发送失败，检查网络、邮箱设置、app权限设置");
                 }
             }
         });

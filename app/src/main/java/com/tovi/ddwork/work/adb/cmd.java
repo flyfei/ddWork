@@ -1,7 +1,5 @@
 package com.tovi.ddwork.work.adb;
 
-import java.io.DataOutputStream;
-import java.io.OutputStream;
 import java.util.Random;
 
 /**
@@ -16,6 +14,7 @@ public class cmd {
         execShellCmd("input keyevent KEYCODE_POWER");
         sleep(2);
     }
+
     /**
      * unLock
      */
@@ -55,6 +54,7 @@ public class cmd {
         }
         sleep(2);
     }
+
     /**
      * off Work
      *
@@ -116,36 +116,27 @@ public class cmd {
      * @param filePath
      * @return
      */
-    public static boolean test(String filePath) {
-        boolean res = execShellCmd("screencap -p " + filePath);
+    public static void test(String filePath) {
+        execShellCmd("screencap -p " + filePath);
         sleep(2);
-        return res;
     }
 
+    /**
+     * for test root
+     */
+    public static boolean checkRootPermission() {
+        return ShellUtils.checkRootPermission();
+    }
+
+    private static boolean isRoot = ShellUtils.checkRootPermission();
 
     /**
      * 执行shell命令
      *
      * @param cmd
      */
-    private static boolean execShellCmd(String cmd) {
-
-        try {
-            // 申请获取root权限，这一步很重要，不然会没有作用
-            Process process = Runtime.getRuntime().exec("su");
-            // 获取输出流
-            OutputStream outputStream = process.getOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(
-                    outputStream);
-            dataOutputStream.writeBytes(cmd);
-            dataOutputStream.flush();
-            dataOutputStream.close();
-            outputStream.close();
-            return true;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            return false;
-        }
+    private static void execShellCmd(String cmd) {
+        ShellUtils.execCommand(cmd, isRoot);
     }
 
     /**
