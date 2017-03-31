@@ -46,15 +46,17 @@ public class AutoWork {
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(AlarmReceiver.TYPE, AlarmReceiver.WORK);
-        boolean isOnWork = calendar.get(Calendar.HOUR_OF_DAY) == Config.ON_WORK_HOUR && calendar.get(Calendar.MINUTE) == Config.AUTO_ON_WORK_MINUTE;
-        boolean isOffWork = calendar.get(Calendar.HOUR_OF_DAY) == Config.OFF_WORK_HOUR && calendar.get(Calendar.MINUTE) == Config.AUTO_OFF_WORK_MINUTE;
-        intent.putExtra(WORK_TYPE, isOnWork ? WORK_TYPE_ON_WORK : (isOffWork ? WORK_TYPE_OFF_WORK : ""));
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        boolean isOnWork = hour == Config.AUTO_ON_WORK_HOUR;
+        boolean isOffWork = hour == Config.AUTO_OFF_WORK_HOUR;
+        String type = isOnWork ? WORK_TYPE_ON_WORK : (isOffWork ? WORK_TYPE_OFF_WORK : "");
+        intent.putExtra(WORK_TYPE, type);
 
         alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+        System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + "  type:" + type);
 
-        SendEMail.send(null, "打卡时间设置为:" + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE), null);
+        SendEMail.send(null, "打卡时间设置为:" + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + "  type:" + type, null);
         Alarm.bindIntent(context, calendar, alarmIntent);
     }
 
