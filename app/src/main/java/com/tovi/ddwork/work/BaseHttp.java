@@ -1,12 +1,6 @@
 package com.tovi.ddwork.work;
 
-import android.content.Context;
 import android.text.TextUtils;
-
-import com.tovi.ddwork.Util;
-import com.tovi.ddwork.work.takescreen.SendEMail;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -73,50 +67,6 @@ public class BaseHttp {
                 if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
                 if (callback != null) callback.onResponse(response.body().string());
-            }
-        });
-    }
-
-
-    public static void sync(final Context context) {
-        Request request = new Request.Builder()
-                .url("https://raw.githubusercontent.com/flyfei/ddWork/test/data")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                String json = response.body().string().replaceAll("\n\t", "").replace("\n", "");
-                System.out.println(json);
-
-
-                int location = -1;
-                boolean forceOnWork = false;
-                boolean forceOffWork = false;
-                try {
-                    JSONObject jsonObject = new JSONObject(json);
-                    forceOnWork = jsonObject.getInt("forceOnWork") == 1;
-                    forceOffWork = jsonObject.getInt("forceOffWork") == 1;
-                    location = jsonObject.getInt("location");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                System.out.println(location + " " + forceOnWork + " " + forceOffWork);
-
-                if (location == -1) return;
-
-                if (Util.getHomeLocation() != location) {
-                    System.out.println("update location");
-                    Util.setHomeLocation(context.getApplicationContext(), location);
-                    SendEMail.send(null, "Location update:" + location, null);
-                }
             }
         });
     }

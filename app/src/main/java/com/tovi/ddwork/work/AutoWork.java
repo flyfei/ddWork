@@ -24,12 +24,12 @@ public class AutoWork {
     public static void work(Context context, Intent intent) {
         String workType = intent.getStringExtra(WORK_TYPE);
         // onWork
-        if (workType == WORK_TYPE_ON_WORK) {
+        if (workType.equals(WORK_TYPE_ON_WORK)) {
             Work.onWork(context);
             init(context);
         }
         // offWork
-        if (workType == WORK_TYPE_OFF_WORK) {
+        if (workType.equals(WORK_TYPE_OFF_WORK)) {
             Work.offWork(context);
             init(context);
         }
