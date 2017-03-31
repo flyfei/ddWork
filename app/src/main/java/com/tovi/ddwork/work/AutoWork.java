@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.tovi.ddwork.Config;
 import com.tovi.ddwork.receiver.AlarmReceiver;
+import com.tovi.ddwork.work.workdate.WorkCalendar;
 
 import java.util.Calendar;
 
@@ -15,30 +16,19 @@ import java.util.Calendar;
 
 public class AutoWork {
     private static final int ACTION = 100;
-    private static final String WORK_WEEK = "WORK_WEEK";
-    private static final String WORK_HOUR = "WORK_HOUR";
-    private static final String WORK_MINUTE = "WORK_MINUTE";
+    private static final String WORK_TYPE = "WORK_TYPE";
+    private static final String WORK_TYPE_ON_WORK = "ON_WORK";
+    private static final String WORK_TYPE_OFF_WORK = "OFF_WORK";
 
     public static void work(Context context, Intent intent) {
-        int hour = intent.getIntExtra(WORK_HOUR, -1);
-        int week = intent.getIntExtra(WORK_WEEK, -1);
-        int minute = intent.getIntExtra(WORK_MINUTE, -1);
-        work(context, week, hour, minute);
-    }
-
-    private static void work(Context context, int week, int hour, int minute) {
-        // 0 为 周日
-        if (week == 0 || week == 6) {
-            return;
-        }
-
+        String workType = intent.getStringExtra(WORK_TYPE);
         // onWork
-        if (hour == Config.AUTO_ON_WORK_HOUR && minute == Config.AUTO_ON_WORK_MINUTE) {
+        if (workType == WORK_TYPE_ON_WORK) {
             Work.onWork(context);
             init(context);
         }
-        // offwork
-        if (hour == Config.AUTO_OFF_WORK_HOUR && minute == Config.AUTO_OFF_WORK_MINUTE) {
+        // offWork
+        if (workType == WORK_TYPE_OFF_WORK) {
             Work.offWork(context);
             init(context);
         }
@@ -48,63 +38,21 @@ public class AutoWork {
 
         destroy();
 
-
-        Calendar curCalendar = Calendar.getInstance();
-        curCalendar.setTimeInMillis(System.currentTimeMillis());
-        curCalendar.set(Calendar.SECOND, 0);
-        curCalendar.set(Calendar.MILLISECOND, 0);
-        int week = curCalendar.get(Calendar.DAY_OF_WEEK) - 1;
-        int hour = curCalendar.get(Calendar.HOUR_OF_DAY);
-
-        Calendar calendar = (Calendar) curCalendar.clone();
-
-
-        Calendar onWorkCalendar = (Calendar) curCalendar.clone();
-        onWorkCalendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
-        onWorkCalendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
-
-        Calendar offWorkCalendar = (Calendar) curCalendar.clone();
-        offWorkCalendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_OFF_WORK_HOUR);
-        offWorkCalendar.set(Calendar.MINUTE, Config.AUTO_OFF_WORK_MINUTE);
-
-        if (!isWeekend(week) && curCalendar.before(onWorkCalendar)) {
-            calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
-            calendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
-            System.out.println("init cur on ========");
-        } else if (!isWeekend(week) && curCalendar.before(offWorkCalendar)) {
-            calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_OFF_WORK_HOUR);
-            calendar.set(Calendar.MINUTE, Config.AUTO_OFF_WORK_MINUTE);
-            System.out.println("init cur off ========");
-        } else {
-            if (week == 5) {
-                calendar.add(Calendar.DAY_OF_MONTH, 3);
-            } else if (week == 6) {
-                calendar.add(Calendar.DAY_OF_MONTH, 2);
-            } else {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
-            calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
-            calendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
-            System.out.println("init next on ========");
-        }
+        Calendar calendar = WorkCalendar.getWorkDate();
 
         // sync
-        Synchronization.init(context, (Calendar) calendar.clone(), (Calendar) curCalendar.clone());
+        Synchronization.init(context, (Calendar) calendar.clone());
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(AlarmReceiver.TYPE, AlarmReceiver.WORK);
-        intent.putExtra(WORK_WEEK, calendar.get(Calendar.DAY_OF_WEEK) - 1);
-        intent.putExtra(WORK_HOUR, calendar.get(Calendar.HOUR_OF_DAY));
-        intent.putExtra(WORK_MINUTE, calendar.get(Calendar.MINUTE));
+        boolean isOnWork = calendar.get(Calendar.HOUR_OF_DAY) == Config.ON_WORK_HOUR && calendar.get(Calendar.MINUTE) == Config.AUTO_ON_WORK_MINUTE;
+        boolean isOffWork = calendar.get(Calendar.HOUR_OF_DAY) == Config.OFF_WORK_HOUR && calendar.get(Calendar.MINUTE) == Config.AUTO_OFF_WORK_MINUTE;
+        intent.putExtra(WORK_TYPE, isOnWork ? WORK_TYPE_ON_WORK : (isOffWork ? WORK_TYPE_OFF_WORK : ""));
 
         alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
         Alarm.bindIntent(context, calendar, alarmIntent);
-    }
-
-    private static boolean isWeekend(int week) {
-        return week == 0 || week == 6;
     }
 
     private static PendingIntent alarmIntent;

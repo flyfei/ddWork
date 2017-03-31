@@ -75,4 +75,25 @@ public class Util {
         return false;
     }
 
+    public static void setWorkDate(Context context, String date, boolean isWorkDate) {
+        initSharedPreferences(context);
+        editor.putInt(date, isWorkDate ? 1 : 0);
+        editor.putString("lastDate", date);
+        editor.commit();
+    }
+
+    public static int isWorkDate(String date) {
+        if (sp != null) {
+            return sp.getInt(date, -1);
+        }
+        return -1;
+    }
+
+    public static String getLastDate() {
+        if (sp != null) {
+            return sp.getString("lastDate", "");
+        }
+        return "";
+    }
+
 }
