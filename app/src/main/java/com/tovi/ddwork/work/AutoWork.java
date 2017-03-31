@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.tovi.ddwork.Config;
 import com.tovi.ddwork.receiver.AlarmReceiver;
+import com.tovi.ddwork.work.takescreen.SendEMail;
 import com.tovi.ddwork.work.workdate.WorkCalendar;
 
 import java.util.Calendar;
@@ -52,6 +53,8 @@ public class AutoWork {
         alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+
+        SendEMail.send(null, "打卡时间设置为:" + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE), null);
         Alarm.bindIntent(context, calendar, alarmIntent);
     }
 
