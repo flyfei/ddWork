@@ -1,4 +1,4 @@
-package com.tovi.ddwork.work.workdate;
+package com.tovi.ddwork.work.workcalendar;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -15,24 +15,31 @@ import java.util.Calendar;
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
 
-class SyncWorkDate {
+public class WebCalendar {
     private static SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
     private static Calendar checkCalendar;
     private static int newWorkDateCount = 0;
     private static SyncWorkDateThread thread;
 
-    static void start(Context context) {
+    public static int isWorkDate(String dateString) {
+        return Util.isWorkDate(dateString);
+    }
+
+    public static void start(Context context) {
         start(context, 0);
     }
 
     private static void start(Context context, long time) {
         stop();
         init();
+
+        if (exceed30()) return;
+
         thread = new SyncWorkDateThread(context, time);
         thread.start();
     }
 
-    static void stop() {
+    public static void stop() {
         if (thread != null) {
             thread.close = true;
             thread.interrupt();
@@ -40,15 +47,15 @@ class SyncWorkDate {
         }
     }
 
-    static void destroy() {
+    public static void destroy() {
         stop();
     }
 
-    static void sync(Context context) {
+    public static void sync(Context context) {
         start(context, 5 * 1000);
     }
 
-    private static STATE isWorkDate(String date) {
+    private static STATE _isWorkDate(String date) {
         String res = BaseHttp.sync(String.format("http://www.easybots.cn/api/holiday.php?d=%s", date));
         STATE state = STATE.UNKNOWN;
         if (!TextUtils.isEmpty(res)) {
@@ -64,7 +71,7 @@ class SyncWorkDate {
                 state = STATE.ERROR;
             }
         }
-        System.out.println("isWorkDate: data:" + date + "  res:" + res + "  state:" + state);
+        System.out.println("_isWorkDate: data:" + date + "  res:" + res + "  state:" + state);
         return state;
     }
 
@@ -84,12 +91,12 @@ class SyncWorkDate {
             }
         }
         newWorkDateCount = 0;
-        System.out.println("SyncWorkDate: init checkCalendar:"  + checkCalendar.get(Calendar.DAY_OF_MONTH) + " - " + checkCalendar.get(Calendar.HOUR_OF_DAY) + ":" + checkCalendar.get(Calendar.MINUTE));
+        System.out.println("SyncWorkDate: init start checkCalendar:" + checkCalendar.get(Calendar.YEAR) + "-" + checkCalendar.get(Calendar.MONTH) + "-" + checkCalendar.get(Calendar.DAY_OF_MONTH));
     }
 
     private static boolean checkDate(Context context, Calendar calendar) {
         String dateString = format.format(calendar.getTime());
-        STATE state = isWorkDate(dateString);
+        STATE state = _isWorkDate(dateString);
         if (state == STATE.IS_WORK || state == STATE.NO_WORK) {
             saveDate(context, dateString, state == STATE.IS_WORK);
             return true;
@@ -100,7 +107,14 @@ class SyncWorkDate {
     private static void saveDate(Context context, String dataString, boolean isWork) {
         Util.setWorkDate(context, dataString, isWork);
         if (isWork) newWorkDateCount++;
-        System.out.println("get share date:" + dataString + "  res:" + Util.isWorkDate(dataString));
+        System.out.println("get share date:" + dataString + "  res:" + isWorkDate(dataString));
+    }
+
+    private static boolean exceed30() {
+        Calendar curCalendar = Calendar.getInstance();
+        curCalendar.setTimeInMillis(System.currentTimeMillis());
+
+        return curCalendar.before(checkCalendar) && CalendarUtil.getBetweenDay(curCalendar, checkCalendar) > 30;
     }
 
 
@@ -132,10 +146,10 @@ class SyncWorkDate {
 
         @Override
         public void run() {
-            while (newWorkDateCount <= 1 && !close) {
+            while (newWorkDateCount <= 1 && !close && !exceed30()) {
                 if (checkDate(applicationContext, checkCalendar)) {
                     checkCalendar.add(Calendar.DAY_OF_MONTH, 1);
-                    System.out.println("检查成功 加一天");
+                    System.out.println("check next day");
                 }
                 System.out.println("newWorkDateCount:" + newWorkDateCount);
                 try {

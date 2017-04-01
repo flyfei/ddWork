@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.tovi.ddwork.receiver.AlarmReceiver;
 import com.tovi.ddwork.work.websetting.SyncSetting;
-import com.tovi.ddwork.work.workdate.WorkCalendar;
+import com.tovi.ddwork.work.workcalendar.WebCalendar;
 
 import java.util.Calendar;
 
@@ -39,22 +39,22 @@ public class Synchronization {
 
     public static void start(Context context) {
         SyncSetting.start(context);
-        WorkCalendar.start(context);
+        WebCalendar.start(context);
     }
 
     public static void stop() {
         SyncSetting.stop();
-        WorkCalendar.stop();
+        WebCalendar.stop();
     }
 
     public static void destroy() {
         Alarm.cancel(alarmIntent);
         SyncSetting.destroy();
-        WorkCalendar.destroy();
+        WebCalendar.destroy();
     }
 
     public static void sync(Context context) {
         SyncSetting.sync(context);
-        WorkCalendar.sync(context);
+        WebCalendar.sync(context);
     }
 }

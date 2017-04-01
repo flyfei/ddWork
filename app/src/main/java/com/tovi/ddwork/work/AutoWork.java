@@ -4,10 +4,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.tovi.ddwork.Config;
 import com.tovi.ddwork.receiver.AlarmReceiver;
 import com.tovi.ddwork.work.takescreen.SendEMail;
-import com.tovi.ddwork.work.workdate.WorkCalendar;
+import com.tovi.ddwork.work.workcalendar.WorkCalendar;
+import com.tovi.ddwork.work.workcalendar.WorkDate;
 
 import java.util.Calendar;
 
@@ -39,24 +39,22 @@ public class AutoWork {
 
         destroy();
 
-        Calendar calendar = WorkCalendar.getWorkDate();
-
+        WorkDate workDate = WorkCalendar.getWorkDate();
+        Calendar calendar = workDate.getCalendar();
+        String workType = workDate.isOnWork() ? WORK_TYPE_ON_WORK : WORK_TYPE_OFF_WORK;
         // sync
         Synchronization.init(context, (Calendar) calendar.clone());
 
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra(AlarmReceiver.TYPE, AlarmReceiver.WORK);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        boolean isOnWork = hour == Config.AUTO_ON_WORK_HOUR;
-        boolean isOffWork = hour == Config.AUTO_OFF_WORK_HOUR;
-        String type = isOnWork ? WORK_TYPE_ON_WORK : (isOffWork ? WORK_TYPE_OFF_WORK : "");
-        intent.putExtra(WORK_TYPE, type);
+        intent.putExtra(WORK_TYPE, workType);
 
         alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        System.out.println("work time: " + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + "  type:" + type);
+        String subject = String.format("下次打卡(%s)时间为:%s-%s:%s", workType, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+        System.out.println(subject);
 
-        SendEMail.send(null, "打卡时间设置为:" + calendar.get(Calendar.DAY_OF_MONTH) + " - " + calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE) + "  type:" + type, null);
+        SendEMail.send(null, subject, null);
         Alarm.bindIntent(context, calendar, alarmIntent);
     }
 
