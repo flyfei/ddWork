@@ -65,9 +65,9 @@ public class AutoWork {
     }
 
     private static void randomMinute(Calendar calendar) {
-        int randomSize = Util.getRandomSize();
-        if (randomSize <= 0) return;
-        calendar.add(Calendar.MINUTE, new Random().nextInt(randomSize * 2) - randomSize);
+        int randomDelay = Util.getRandomDelay();
+        if (randomDelay <= 0) return;
+        calendar.add(Calendar.MINUTE, new Random().nextInt(randomDelay));
     }
 
     private static PendingIntent alarmIntent;

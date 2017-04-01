@@ -61,7 +61,7 @@ public class SyncSetting {
 
 
         int location = -1;
-        int randomSize = -1;
+        int randomDelay = -1;
         boolean forceOnWork = false;
         boolean forceOffWork = false;
         try {
@@ -75,13 +75,13 @@ public class SyncSetting {
             if (jsonObject.has("location")) {
                 location = jsonObject.getInt("location");
             }
-            if (jsonObject.has("randomSize")) {
-                randomSize = jsonObject.getInt("randomSize");
+            if (jsonObject.has("randomDelay")) {
+                randomDelay = jsonObject.getInt("randomDelay");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(location + " " + forceOnWork + " " + forceOffWork + "  randomSize:" + randomSize);
+        System.out.println(location + " " + forceOnWork + " " + forceOffWork + "  randomDelay:" + randomDelay);
 
         StringBuffer stringBuffer = new StringBuffer();
         if (location != -1 && Util.getHomeLocation() != location) {
@@ -90,10 +90,10 @@ public class SyncSetting {
             stringBuffer.append(" Location:" + location);
         }
 
-        if (randomSize != -1 && Util.getRandomSize() != randomSize) {
-            System.out.println("update randomSize");
-            Util.setRandomSize(context.getApplicationContext(), randomSize);
-            stringBuffer.append(" RandomSize:" + randomSize);
+        if (randomDelay != -1 && Util.getRandomDelay() != randomDelay) {
+            System.out.println("update randomDelay");
+            Util.setRandomDelay(context.getApplicationContext(), randomDelay);
+            stringBuffer.append(" RandomDelay:" + randomDelay);
         }
         if (stringBuffer.length() > 0) {
             SendEMail.send(null, stringBuffer.insert(0, "Setting Update:").toString(), null);

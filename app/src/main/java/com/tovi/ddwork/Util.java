@@ -96,15 +96,15 @@ public class Util {
         return "";
     }
 
-    public static void setRandomSize(Context context, int randomSize) {
+    public static void setRandomDelay(Context context, int randomDelay) {
         initSharedPreferences(context);
-        editor.putInt("randomSize", randomSize);
+        editor.putInt("randomDelay", randomDelay);
         editor.commit();
     }
 
-    public static int getRandomSize() {
+    public static int getRandomDelay() {
         if (sp != null) {
-            return sp.getInt("randomSize", -1);
+            return sp.getInt("randomDelay", -1);
         }
         return -1;
     }
