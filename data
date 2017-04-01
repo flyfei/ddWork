@@ -1,5 +1,6 @@
 {
 	"forceOnWork": 0,
 	"forceOffWork": 0,
-	"location": 0
+	"location": 0,
+	"randomSize": 10
 }
