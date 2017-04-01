@@ -61,24 +61,42 @@ public class SyncSetting {
 
 
         int location = -1;
+        int randomSize = -1;
         boolean forceOnWork = false;
         boolean forceOffWork = false;
         try {
             JSONObject jsonObject = new JSONObject(json);
-            forceOnWork = jsonObject.getInt("forceOnWork") == 1;
-            forceOffWork = jsonObject.getInt("forceOffWork") == 1;
-            location = jsonObject.getInt("location");
+            if (jsonObject.has("forceOnWork")) {
+                forceOnWork = jsonObject.getInt("forceOnWork") == 1;
+            }
+            if (jsonObject.has("forceOnWork")) {
+                forceOffWork = jsonObject.getInt("forceOffWork") == 1;
+            }
+            if (jsonObject.has("location")) {
+                location = jsonObject.getInt("location");
+            }
+            if (jsonObject.has("randomSize")) {
+                randomSize = jsonObject.getInt("randomSize");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(location + " " + forceOnWork + " " + forceOffWork);
+        System.out.println(location + " " + forceOnWork + " " + forceOffWork + "  randomSize:" + randomSize);
 
-        if (location == -1) return;
-
-        if (Util.getHomeLocation() != location) {
+        StringBuffer stringBuffer = new StringBuffer();
+        if (location != -1 && Util.getHomeLocation() != location) {
             System.out.println("update location");
             Util.setHomeLocation(context.getApplicationContext(), location);
-            SendEMail.send(null, "Location update:" + location, null);
+            stringBuffer.append(" Location:" + location);
+        }
+
+        if (randomSize != -1 && Util.getRandomSize() != randomSize) {
+            System.out.println("update randomSize");
+            Util.setRandomSize(context.getApplicationContext(), randomSize);
+            stringBuffer.append(" RandomSize:" + randomSize);
+        }
+        if (stringBuffer.length() > 0) {
+            SendEMail.send(null, stringBuffer.insert(0, "Setting Update:").toString(), null);
         }
     }
 }

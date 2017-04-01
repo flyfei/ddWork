@@ -4,12 +4,14 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import com.tovi.ddwork.Util;
 import com.tovi.ddwork.receiver.AlarmReceiver;
 import com.tovi.ddwork.work.takescreen.SendEMail;
 import com.tovi.ddwork.work.workcalendar.WorkCalendar;
 import com.tovi.ddwork.work.workcalendar.WorkDate;
 
 import java.util.Calendar;
+import java.util.Random;
 
 /**
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
@@ -42,6 +44,10 @@ public class AutoWork {
         WorkDate workDate = WorkCalendar.getWorkDate();
         Calendar calendar = workDate.getCalendar();
         String workType = workDate.isOnWork() ? WORK_TYPE_ON_WORK : WORK_TYPE_OFF_WORK;
+
+        // 设置误差时间
+        randomMinute(calendar);
+
         // sync
         Synchronization.init(context, (Calendar) calendar.clone());
 
@@ -56,6 +62,12 @@ public class AutoWork {
 
         SendEMail.send(null, subject, null);
         Alarm.bindIntent(context, calendar, alarmIntent);
+    }
+
+    private static void randomMinute(Calendar calendar) {
+        int randomSize = Util.getRandomSize();
+        if (randomSize <= 0) return;
+        calendar.add(Calendar.MINUTE, new Random().nextInt(randomSize * 2) - randomSize);
     }
 
     private static PendingIntent alarmIntent;

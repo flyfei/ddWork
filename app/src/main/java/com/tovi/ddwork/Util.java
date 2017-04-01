@@ -96,4 +96,17 @@ public class Util {
         return "";
     }
 
+    public static void setRandomSize(Context context, int randomSize) {
+        initSharedPreferences(context);
+        editor.putInt("randomSize", randomSize);
+        editor.commit();
+    }
+
+    public static int getRandomSize() {
+        if (sp != null) {
+            return sp.getInt("randomSize", -1);
+        }
+        return -1;
+    }
+
 }
