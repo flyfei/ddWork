@@ -69,8 +69,7 @@ public class WorkCalendar {
         String dateString = format.format(calendar.getTime());
         int state = WebCalendar.isWorkDate(dateString);
         if (state == -1) {
-            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-            return DefaultCalendar.isWorkDate(dayOfWeek);
+            return DefaultCalendar.isWorkDate(calendar);
         }
         return state == 1;
     }
