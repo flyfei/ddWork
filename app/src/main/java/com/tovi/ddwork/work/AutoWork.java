@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import com.tovi.ddwork.Util;
 import com.tovi.ddwork.receiver.AlarmReceiver;
-import com.tovi.ddwork.work.takescreen.SendEMail;
 import com.tovi.ddwork.work.workcalendar.WorkCalendar;
 import com.tovi.ddwork.work.workcalendar.WorkDate;
 
@@ -27,17 +26,17 @@ public class AutoWork {
         String workType = intent.getStringExtra(WORK_TYPE);
         // onWork
         if (workType.equals(WORK_TYPE_ON_WORK)) {
-            Work.onWork(context);
-            init(context);
+            String tag = init(context);
+            Work.onWork(context, tag);
         }
         // offWork
         if (workType.equals(WORK_TYPE_OFF_WORK)) {
-            Work.offWork(context);
-            init(context);
+            String tag = init(context);
+            Work.offWork(context, tag);
         }
     }
 
-    public static void init(Context context) {
+    public static String init(Context context) {
 
         destroy();
 
@@ -57,11 +56,12 @@ public class AutoWork {
 
         alarmIntent = PendingIntent.getBroadcast(context, ACTION, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-        String subject = String.format("下次打卡(%s)时间为:%s-%s:%s", workType, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
-        System.out.println(subject);
+        String tag = String.format("下次打卡(%s)时间为:%s-%s:%s", workType, calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+        System.out.println(tag);
 
-        SendEMail.send(null, subject, null);
         Alarm.bindIntent(context, calendar, alarmIntent);
+
+        return tag;
     }
 
     private static void randomMinute(Calendar calendar) {

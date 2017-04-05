@@ -96,7 +96,7 @@ public class SyncSetting {
             stringBuffer.append(" RandomDelay:" + randomDelay);
         }
         if (stringBuffer.length() > 0) {
-            SendEMail.send(null, stringBuffer.insert(0, "Setting Update:").toString(), null);
+            SendEMail.send(null, stringBuffer.insert(0, "Setting Update:").toString(), "配置更新", null);
         }
     }
 }

@@ -32,7 +32,7 @@ public class Test {
     }
 
     private static void testEmail(final String filePath, String subject, final OnTestListener onTestListener) {
-        SendEMail.send(filePath, subject, new SendEMail.OnSendListener() {
+        SendEMail.send(filePath, subject, null, new SendEMail.OnSendListener() {
             @Override
             public void onSendOk() {
                 cmd.delFile(filePath);

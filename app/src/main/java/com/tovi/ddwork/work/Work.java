@@ -3,6 +3,7 @@ package com.tovi.ddwork.work;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.tovi.ddwork.Config;
@@ -11,33 +12,71 @@ import com.tovi.ddwork.work.adb.cmd;
 import com.tovi.ddwork.work.takescreen.SendEMail;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
 
 class Work {
-    public static void onWork(Context context) {
+    public static void onWork(Context context, final String tag) {
         System.out.println("onWorking===");
         new WorkThread(context, new WorkThread.OnWorkListener() {
+            private List<String> filenames = new ArrayList<>();
+            private String type = "onWork";
+
             @Override
             public void toWork() {
-                cmd.onWork(Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
+                cmd.onWork(Config.LOCATIONS.get(Util.getHomeLocation()), new cmd.OnOKListener() {
+                    @Override
+                    public void onOk() {
+                        System.out.print(type);
+                        String filename = takeScreen(type);
+                        if (!TextUtils.isEmpty(filename)) filenames.add(filename);
+                    }
+
+                    @Override
+                    public void onGotoHome() {
+                        System.out.print("GotoHome");
+                        String filename = takeScreen("GotoHome");
+                        if (!TextUtils.isEmpty(filename)) filenames.add(filename);
+                    }
+                });
+                sendEmail(filenames, type, tag);
             }
         }).start();
     }
 
-    public static void offWork(Context context) {
+    public static void offWork(Context context, final String tag) {
         System.out.println("offWorking===");
         new WorkThread(context, new WorkThread.OnWorkListener() {
+            private List<String> filenames = new ArrayList<>();
+            private String type = "offWork";
+
             @Override
             public void toWork() {
                 Calendar mCalendar = Calendar.getInstance();
                 mCalendar.setTimeInMillis(System.currentTimeMillis());
                 int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
-                cmd.offWork(hour < Config.OFF_WORK_HOUR, Config.LOCATIONS.get(Util.getHomeLocation()), onOKListener);
+                cmd.offWork(hour < Config.OFF_WORK_HOUR, Config.LOCATIONS.get(Util.getHomeLocation()), new cmd.OnOKListener() {
+                    @Override
+                    public void onOk() {
+                        System.out.print(type);
+                        String filename = takeScreen(type);
+                        if (!TextUtils.isEmpty(filename)) filenames.add(filename);
+                    }
+
+                    @Override
+                    public void onGotoHome() {
+                        System.out.print("GotoHome");
+                        String filename = takeScreen("GotoHome");
+                        if (!TextUtils.isEmpty(filename)) filenames.add(filename);
+                    }
+                });
+                sendEmail(filenames, type, tag);
             }
         }).start();
     }
@@ -74,37 +113,41 @@ class Work {
         cmd.power();
     }
 
-    private static final cmd.OnOKListener onOKListener = new cmd.OnOKListener() {
-        @Override
-        public void onOk(String type) {
-            sendEmail(type);
+    private static String takeScreen(String tag) {
+        // 是否需要发送邮件
+        if (!Config.AUTO_SEND_EMAIL) {
+            return null;
         }
+        String date = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date(System.currentTimeMillis()));
+        final String filePath = String.format("/sdcard/Android/data/.%s%s.png", date, TextUtils.isEmpty(tag) ? "" : tag);
+        cmd.takeScreen(filePath);
+        return filePath;
+    }
 
-        @Override
-        public void onGotoHome() {
-            sendEmail("GotoHome");
-        }
-    };
-
-    private static void sendEmail(String type) {
+    private static void sendEmail(final List<String> fileNames, String tag, String body) {
         // 是否需要发送邮件
         if (!Config.AUTO_SEND_EMAIL) {
             return;
         }
-
         String date = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss").format(new Date(System.currentTimeMillis()));
-        String fileName = String.format(".%s%s", date, type);
-        final String filePath = String.format("/sdcard/Android/data/%s.png", fileName);
-        cmd.takeScreen(filePath);
-        SendEMail.send(filePath, String.format("%s-%s", date, type), new SendEMail.OnSendListener() {
+        String subject = String.format("%s-%s", date, TextUtils.isEmpty(tag) ? "" : tag);
+        SendEMail.send(fileNames, subject, body, new SendEMail.OnSendListener() {
             @Override
             public void onSendOk() {
-                cmd.delFile(filePath);
+                delFiles();
             }
 
             @Override
             public void onSendError() {
-                cmd.delFile(filePath);
+                delFiles();
+            }
+
+            private void delFiles() {
+                if (fileNames != null && !fileNames.isEmpty()) {
+                    for (String fileName : fileNames) {
+                        cmd.delFile(fileName);
+                    }
+                }
             }
         });
     }

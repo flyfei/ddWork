@@ -75,7 +75,7 @@ public class cmd {
             execShellCmd("input tap 766 1514");
             sleep(5);
         }
-        if (onOKListener != null) onOKListener.onOk("offWork");
+        if (onOKListener != null) onOKListener.onOk();
         execShellCmd("input keyevent KEYCODE_BACK");
         sleep(5);
         if (onOKListener != null) onOKListener.onGotoHome();
@@ -95,7 +95,7 @@ public class cmd {
         // onWork
         execShellCmd("input tap 540 1015");
         sleep(5);
-        if (onOKListener != null) onOKListener.onOk("onWork");
+        if (onOKListener != null) onOKListener.onOk();
         execShellCmd("input keyevent KEYCODE_BACK");
         sleep(5);
         if (onOKListener != null) onOKListener.onGotoHome();
@@ -145,7 +145,6 @@ public class cmd {
      * @param second
      */
     private static void sleep(long second) {
-        System.out.println("second: " + second);
         if (second <= 0) return;
         try {
             Thread.sleep(second * 1000);
@@ -164,7 +163,7 @@ public class cmd {
     }
 
     public interface OnOKListener {
-        void onOk(String type);
+        void onOk();
 
         void onGotoHome();
     }
