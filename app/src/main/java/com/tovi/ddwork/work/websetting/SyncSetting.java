@@ -9,6 +9,8 @@ import com.tovi.ddwork.work.takescreen.SendEMail;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 /**
  * @author <a href='mailto:zhaotengfei9@gmail.com'>Tengfei Zhao</a>
  */
@@ -96,7 +98,7 @@ public class SyncSetting {
             stringBuffer.append(" RandomDelay:" + randomDelay);
         }
         if (stringBuffer.length() > 0) {
-            SendEMail.send(null, stringBuffer.insert(0, "Setting Update:").toString(), "配置更新", null);
+            SendEMail.send((List<String>) null, stringBuffer.insert(0, "Setting Update:").toString(), "配置更新", null);
         }
     }
 }
