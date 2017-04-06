@@ -2,5 +2,9 @@
 	"forceOnWork": 0,
 	"forceOffWork": 0,
 	"location": 0,
-	"randomDelay": 10
+	"randomDelay": 10,
+	"onWorkHour": 9,
+	"onWorkMinute": 48,
+	"offWorkHour": 20,
+	"offWorkMinute": 5
 }
