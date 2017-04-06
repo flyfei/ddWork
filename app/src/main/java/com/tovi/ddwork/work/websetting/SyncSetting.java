@@ -64,6 +64,10 @@ public class SyncSetting {
 
         int location = -1;
         int randomDelay = -1;
+        int onWorkHour = -1;
+        int onWorkMinute = -1;
+        int offWorkHour = -1;
+        int offWorkMinute = -1;
         boolean forceOnWork = false;
         boolean forceOffWork = false;
         try {
@@ -80,10 +84,21 @@ public class SyncSetting {
             if (jsonObject.has("randomDelay")) {
                 randomDelay = jsonObject.getInt("randomDelay");
             }
+            if (jsonObject.has("onWorkHour")) {
+                onWorkHour = jsonObject.getInt("onWorkHour");
+            }
+            if (jsonObject.has("onWorkMinute")) {
+                onWorkMinute = jsonObject.getInt("onWorkMinute");
+            }
+            if (jsonObject.has("offWorkHour")) {
+                offWorkHour = jsonObject.getInt("offWorkHour");
+            }
+            if (jsonObject.has("offWorkMinute")) {
+                offWorkMinute = jsonObject.getInt("offWorkMinute");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(location + " " + forceOnWork + " " + forceOffWork + "  randomDelay:" + randomDelay);
 
         StringBuffer stringBuffer = new StringBuffer();
         if (location != -1 && Util.getHomeLocation() != location) {
@@ -97,8 +112,18 @@ public class SyncSetting {
             Util.setRandomDelay(context.getApplicationContext(), randomDelay);
             stringBuffer.append(" RandomDelay:" + randomDelay);
         }
+        if ((onWorkHour != -1 && Util.getOnWorkHour() != onWorkHour) || (onWorkMinute != -1 && Util.getOnWorkMinute() != onWorkMinute)) {
+            System.out.println("update onWorkTime");
+            Util.setOnWorkTime(context.getApplicationContext(), onWorkHour, onWorkMinute);
+            stringBuffer.append(" onWorkTime:" + onWorkHour + "-" + onWorkMinute);
+        }
+        if ((offWorkHour != -1 && Util.getOffWorkHour() != offWorkHour) || (offWorkMinute != -1 && Util.getOffWorkMinute() != offWorkMinute)) {
+            System.out.println("update offWorkTime");
+            Util.setOffWorkTime(context.getApplicationContext(), offWorkHour, offWorkMinute);
+            stringBuffer.append(" offWorkTime:" + offWorkHour + "-" + offWorkMinute);
+        }
         if (stringBuffer.length() > 0) {
-            SendEMail.send((List<String>) null, stringBuffer.insert(0, "Setting Update:").toString(), "配置更新", null);
+            SendEMail.send((List<String>) null, "Setting Update", stringBuffer.insert(0, "配置更新").toString(), null);
         }
     }
 }

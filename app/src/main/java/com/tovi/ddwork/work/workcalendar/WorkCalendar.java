@@ -1,6 +1,6 @@
 package com.tovi.ddwork.work.workcalendar;
 
-import com.tovi.ddwork.Config;
+import com.tovi.ddwork.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,18 +16,23 @@ public class WorkCalendar {
         Calendar curCalendar = Calendar.getInstance();
         curCalendar.setTimeInMillis(System.currentTimeMillis());
 
+        int onWorkHour24 = Util.getOnWorkHour();
+        int onWorkMinute = Util.getOnWorkMinute();
+        int offWorkHour24 = Util.getOffWorkHour();
+        int offWorkMinute = Util.getOffWorkMinute();
+
         Calendar calendar;
 
 
         Calendar onWorkCalendar = (Calendar) curCalendar.clone();
-        onWorkCalendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
-        onWorkCalendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
+        onWorkCalendar.set(Calendar.HOUR_OF_DAY, onWorkHour24);
+        onWorkCalendar.set(Calendar.MINUTE, onWorkMinute);
         onWorkCalendar.set(Calendar.SECOND, 0);
         onWorkCalendar.set(Calendar.MILLISECOND, 0);
 
         Calendar offWorkCalendar = (Calendar) curCalendar.clone();
-        offWorkCalendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_OFF_WORK_HOUR);
-        offWorkCalendar.set(Calendar.MINUTE, Config.AUTO_OFF_WORK_MINUTE);
+        offWorkCalendar.set(Calendar.HOUR_OF_DAY, offWorkHour24);
+        offWorkCalendar.set(Calendar.MINUTE, offWorkMinute);
         offWorkCalendar.set(Calendar.SECOND, 0);
         offWorkCalendar.set(Calendar.MILLISECOND, 0);
 
@@ -45,8 +50,8 @@ public class WorkCalendar {
         } else {
             curCalendar.add(Calendar.DAY_OF_MONTH, 1);
             calendar = findWorkDate(curCalendar);
-            calendar.set(Calendar.HOUR_OF_DAY, Config.AUTO_ON_WORK_HOUR);
-            calendar.set(Calendar.MINUTE, Config.AUTO_ON_WORK_MINUTE);
+            calendar.set(Calendar.HOUR_OF_DAY, onWorkHour24);
+            calendar.set(Calendar.MINUTE, onWorkMinute);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
             isOnWork = true;

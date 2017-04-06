@@ -49,6 +49,27 @@ public class Util {
         }
     }
 
+    private static int getInt(String key, int defaultValue) {
+        if (sp != null) {
+            return sp.getInt(key, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    private static String getString(String key, String defaultValue) {
+        if (sp != null) {
+            return sp.getString(key, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    private static boolean getBoolean(String key, boolean defaultValue) {
+        if (sp != null) {
+            return sp.getBoolean(key, defaultValue);
+        }
+        return defaultValue;
+    }
+
     public static void setHomeLocation(Context context, int location) {
         initSharedPreferences(context);
         editor.putInt("location", location);
@@ -56,10 +77,7 @@ public class Util {
     }
 
     public static int getHomeLocation() {
-        if (sp != null) {
-            return sp.getInt("location", 0);
-        }
-        return 0;
+        return getInt("location", 0);
     }
 
     public static void setTested(Context context, boolean test) {
@@ -69,10 +87,7 @@ public class Util {
     }
 
     public static boolean getTested() {
-        if (sp != null) {
-            return sp.getBoolean("test", false);
-        }
-        return false;
+        return getBoolean("test", false);
     }
 
     public static void setWorkDate(Context context, String date, boolean isWorkDate) {
@@ -83,17 +98,11 @@ public class Util {
     }
 
     public static int isWorkDate(String date) {
-        if (sp != null) {
-            return sp.getInt(date, -1);
-        }
-        return -1;
+        return getInt(date, -1);
     }
 
     public static String getLastDate() {
-        if (sp != null) {
-            return sp.getString("lastDate", "");
-        }
-        return "";
+        return getString("lastDate", "");
     }
 
     public static void setRandomDelay(Context context, int randomDelay) {
@@ -103,10 +112,37 @@ public class Util {
     }
 
     public static int getRandomDelay() {
-        if (sp != null) {
-            return sp.getInt("randomDelay", -1);
-        }
-        return -1;
+        return getInt("randomDelay", -1);
+    }
+
+    public static void setOnWorkTime(Context context, int hour, int minute) {
+        initSharedPreferences(context);
+        editor.putInt("onWorkHour", hour);
+        editor.putInt("onWorkMinute", minute);
+        editor.commit();
+    }
+
+    public static void setOffWorkTime(Context context, int hour, int minute) {
+        initSharedPreferences(context);
+        editor.putInt("offWorkHour", hour);
+        editor.putInt("offWorkMinute", minute);
+        editor.commit();
+    }
+
+    public static int getOnWorkHour() {
+        return getInt("onWorkHour", Config.AUTO_ON_WORK_HOUR);
+    }
+
+    public static int getOnWorkMinute() {
+        return getInt("onWorkMinute", Config.AUTO_ON_WORK_MINUTE);
+    }
+
+    public static int getOffWorkHour() {
+        return getInt("offWorkHour", Config.AUTO_OFF_WORK_HOUR);
+    }
+
+    public static int getOffWorkMinute() {
+        return getInt("offWorkMinute", Config.AUTO_OFF_WORK_MINUTE);
     }
 
 }

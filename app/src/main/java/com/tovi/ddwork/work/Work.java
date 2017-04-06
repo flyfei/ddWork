@@ -13,7 +13,6 @@ import com.tovi.ddwork.work.takescreen.SendEMail;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -58,10 +57,7 @@ class Work {
 
             @Override
             public void toWork() {
-                Calendar mCalendar = Calendar.getInstance();
-                mCalendar.setTimeInMillis(System.currentTimeMillis());
-                int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
-                cmd.offWork(hour < Config.OFF_WORK_HOUR, Config.LOCATIONS.get(Util.getHomeLocation()), new cmd.OnOKListener() {
+                cmd.offWork(false, Config.LOCATIONS.get(Util.getHomeLocation()), new cmd.OnOKListener() {
                     @Override
                     public void onOk() {
                         System.out.print(type);
