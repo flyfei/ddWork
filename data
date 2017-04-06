@@ -5,6 +5,6 @@
 	"randomDelay": 10,
 	"onWorkHour": 9,
 	"onWorkMinute": 48,
-	"offWorkHour": 20,
-	"offWorkMinute": 25
+	"offWorkHour": 19,
+	"offWorkMinute": 10
 }
