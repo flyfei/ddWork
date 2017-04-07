@@ -4,7 +4,7 @@
 	"location": 0,
 	"randomDelay": 20,
 	"onWorkHour": 9,
-	"onWorkMinute": 48,
+	"onWorkMinute": 8,
 	"offWorkHour": 19,
-	"offWorkMinute": 10
+	"offWorkMinute": 2
 }
