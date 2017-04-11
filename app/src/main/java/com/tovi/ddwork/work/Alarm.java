@@ -29,10 +29,10 @@ class Alarm {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
-            System.out.println("setExact");
+            System.out.println("alarm setExact");
         } else {
             alarmMgr.set(AlarmManager.RTC_WAKEUP, millis, pendingIntent);
-            System.out.println("setRepeating");
+            System.out.println("alarm set");
         }
     }
 

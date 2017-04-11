@@ -30,7 +30,7 @@ public class Service {
         long triggerAtTime = SystemClock.elapsedRealtime();
 
         //使用AlarmManger的setRepeating方法设置定期执行的时间间隔（seconds秒）和需要执行的Service
-        manager.setRepeating(AlarmManager.ELAPSED_REALTIME, triggerAtTime,
+        manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime,
                 seconds * 1000, pendingIntent);
 
         context.startService(intent);

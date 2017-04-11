@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // 开启服务
-                    Service.start(MainActivity.this, 1 * 60);
+                    Service.start(MainActivity.this, 60 * 60);
                 } else {
                     Service.stop(MainActivity.this);
                 }

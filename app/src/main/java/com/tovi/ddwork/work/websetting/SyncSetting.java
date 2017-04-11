@@ -43,7 +43,11 @@ public class SyncSetting {
         stop();
     }
 
-    public static void sync(final Context context) {
+    public static void sync(Context context) {
+        sync(context, null);
+    }
+
+    public static void sync(final Context context, final SyncSettingListener syncSettingListener) {
         BaseHttp.asyn("https://raw.githubusercontent.com/flyfei/ddWork/test/data", new BaseHttp.onHttpCallback() {
             @Override
             public void onFailure() {
@@ -52,12 +56,12 @@ public class SyncSetting {
 
             @Override
             public void onResponse(String res) {
-                dealWithData(context, res);
+                dealWithData(context, res, syncSettingListener);
             }
         });
     }
 
-    private static void dealWithData(Context context, String res) {
+    private static void dealWithData(Context context, String res, SyncSettingListener syncSettingListener) {
         String json = res.replaceAll("\n\t", "").replace("\n", "");
         System.out.println(json);
 
@@ -107,23 +111,35 @@ public class SyncSetting {
             stringBuffer.append(" Location:" + location);
         }
 
+        boolean hasNewWorkTimeSetting = false;
         if (randomDelay != -1 && Util.getRandomDelay() != randomDelay) {
             System.out.println("update randomDelay");
+            hasNewWorkTimeSetting = true;
             Util.setRandomDelay(context.getApplicationContext(), randomDelay);
             stringBuffer.append(" RandomDelay:" + randomDelay);
         }
         if ((onWorkHour != -1 && Util.getOnWorkHour() != onWorkHour) || (onWorkMinute != -1 && Util.getOnWorkMinute() != onWorkMinute)) {
             System.out.println("update onWorkTime");
+            hasNewWorkTimeSetting = true;
             Util.setOnWorkTime(context.getApplicationContext(), onWorkHour, onWorkMinute);
             stringBuffer.append(" onWorkTime:" + onWorkHour + "-" + onWorkMinute);
         }
         if ((offWorkHour != -1 && Util.getOffWorkHour() != offWorkHour) || (offWorkMinute != -1 && Util.getOffWorkMinute() != offWorkMinute)) {
             System.out.println("update offWorkTime");
+            hasNewWorkTimeSetting = true;
             Util.setOffWorkTime(context.getApplicationContext(), offWorkHour, offWorkMinute);
             stringBuffer.append(" offWorkTime:" + offWorkHour + "-" + offWorkMinute);
         }
         if (stringBuffer.length() > 0) {
             SendEMail.send((List<String>) null, "Setting Update", stringBuffer.insert(0, "配置更新").toString(), null);
         }
+
+        if (hasNewWorkTimeSetting && syncSettingListener != null) {
+            syncSettingListener.hasNewWorkTime();
+        }
+    }
+
+    public interface SyncSettingListener {
+        void hasNewWorkTime();
     }
 }
