@@ -1,0 +1,7 @@
+{
+	"randomDelay": 10,
+	"onWorkHour": 9,
+	"onWorkMinute": 18,
+	"offWorkHour": 18,
+	"offWorkMinute": 31
+}
