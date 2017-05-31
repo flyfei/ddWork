@@ -1,7 +1,7 @@
 {
 	"forceOnWork": 0,
 	"forceOffWork": 0,
-	"location": 0,
+	"location": -1,
 	"autoLogin": 1,
 	"randomDelay": 5,
 	"onWorkHour": 9,
