@@ -4,8 +4,8 @@
 	"location": 0,
 	"autoLogin": 1,
 	"randomDelay": 5,
-	"onWorkHour": 2,
+	"onWorkHour": 9,
 	"onWorkMinute": 20,
-	"offWorkHour": 3,
-	"offWorkMinute": 40
+	"offWorkHour": 18,
+	"offWorkMinute": 30
 }
