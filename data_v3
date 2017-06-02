@@ -1,0 +1,11 @@
+{
+	"forceOnWork": 0,
+	"forceOffWork": 0,
+	"location": 0,
+	"autoLogin": 1,
+	"randomDelay": 5,
+	"onWorkHour": 2,
+	"onWorkMinute": 20,
+	"offWorkHour": 3,
+	"offWorkMinute": 40
+}
